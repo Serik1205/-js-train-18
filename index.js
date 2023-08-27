@@ -114,12 +114,13 @@ function getBookById(books, id) {
 	// Повертаємо book
 	// Повертаємо текстове представлення помилки
 	try {
-		if (id >= books.length) {
-			let book = new TypeError(`Книга з ID ${id} не знайдена!`)
-			return book;
+		let book = books.find((book) => book.id === id);
+		if (!book) {
+			throw new TypeError(`Книга з ID ${id} не знайдена!`)
 		}
+		return `Книга:${book.title}`
 	} catch (error) {
-		return error.message;
+		return error.toString();
 	}
 }
 console.log("Завдання: 4 ==============================");
@@ -161,6 +162,16 @@ function decodeURIComponentWrapper(encodedString) {
 	// Повертаємо декодований рядок
 	// Якщо виникла помилка, і ії назва дорівнює URIError повертаємо помилку про неправильний URI формат з повідомленням Помилка декодування URI,
 	//  інкше повертаємо текстове представлення помилки
+	try {
+		const decodedString = decodeURIComponent(encodedString);
+		return decodedString;
+	} catch (error) {
+		if (error.name === "URIError") {
+			return new URIError(`Помилка декодування URI`);
+		} else {
+			return new Error(error.toString());
+		}
+	}
 }
 
 console.log("Завдання: 5 ==============================");
@@ -182,6 +193,20 @@ function findEvenNumber(numbers) {
 	// Якщо число знайдено повертаємо його
 	// Виводимо текстове представлення помилки.
 	// Незалежно від результату, виводимо вихідний масив.
+	let evenNumber;
+	try {
+		evenNumber = numbers.find((number) => number % 2 === 0);
+		if (evenNumber === undefined) {
+			throw new Error("У масиві немає чисел, що діляться на 2 без остачі!");
+		}
+		return evenNumber;
+	} catch (error) {
+
+		return error.toString();
+	} finally {
+
+		console.log(numbers);
+	}
 }
 
 console.log("Завдання: 6 ==============================");
@@ -208,7 +233,21 @@ function validateUser(user) {
 	// Перевіряємо, чи існує email користувача,якщо ні викидуємо помилку з повідомленням "Email користувача не вказано!", а як причину вказуємо об'єкт user.
 	// Якщо всі перевірки пройдено успішно виводимо повідомлення "Об'єкт користувача відповідає всім вимогам."
 	// Виводимо повідомлення про помилку та причину помилки.
+	try {
+		// Перевіряємо, чи існує об'єкт користувача,якщо ні викидуємо помилку з повідомленням "Об'єкт користувача не вказано!".
+		if (!user) {
+			throw new Error("Об'єкт користувача не вказано!");
+		}
+		if (!user.email) {
+			throw new Error("Email користувача не вказано!", { cause: user });
+		}
+		console.log("Об'єкт користувача відповідає всім вимогам.");
+	} catch (error) {
+		// Виводимо повідомлення про помилку та причину помилки.
+		console.error(error.message, error.cause);
+	}
 }
+
 
 console.log("Завдання: 7 ==============================");
 
@@ -230,6 +269,18 @@ function calculateSquareRoot(number) {
 	// Перевіряємо, чи число не від'ємне, якщо ні викидуємо помилку про тип недопустимий діапазон з повідомленням Число не повинно бути від'ємним!".
 	// Повертаємо корінь квадратний з вхідного значення
 	// Повертаємо повідомлення про помилку.
+	try {
+		if (number !== "number") {
+			throw new TypeError("Аргумент має бути числом!")
+		}
+		if (number < 0) {
+			throw new RangeError("Число не повинно бути від'ємним!");
+		}
+		return Math.sqrt(number);
+	} catch (error) {
+
+		return error.message;
+	}
 }
 
 console.log("Завдання: 8 ==============================");
@@ -256,6 +307,17 @@ function processData(data) {
 	// Повертаємо рядок "Дані успішно оброблені"
 	// Виводимо stack trace помилки
 	// Повертаємо повідомлення помилки
+	try {
+		data.forEach((item, index) => {
+			if (typeof item !== "number") {
+				throw new TypeError(`Елемент з індексом ${index} має бути числом!`);
+			}
+		});
+		return "Дані успішно оброблені";
+	} catch (error) {
+		console.error(error.stack);
+		return error.message;
+	}
 }
 
 console.log("Завдання: 9 ==============================");
@@ -279,6 +341,12 @@ console.log(processData([1, "two", 3]));
 function evaluateExpression(expression) {
 	// Повертаємо результат розрахунку
 	// Якщо була виявлена помилка повертаємо помилку при виконанні функції eval
+	try {
+		const result = eval(expression);
+		return result;
+	} catch (error) {
+		return new EvalError(error.message);
+	}
 }
 
 console.log("Завдання: 10 ==============================");
